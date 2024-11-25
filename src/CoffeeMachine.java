@@ -4,24 +4,41 @@ public class CoffeeMachine {
 
     public static void main(String[] args) {
 
-        System.out.println("Starting to make a coffee");
-        System.out.println("Grinding coffee beans");
-        System.out.println("Boiling water");
-        System.out.println("Mixing boiled water with crushed coffee beans");
-        System.out.println("Pouring coffee into the cup");
-        System.out.println("Pouring some milk into the cup");
-        System.out.println("Coffee is ready!");
-
         Scanner input = new Scanner(System.in);
-        System.out.println("Write how many cups of coffee you will need: ");
-        int cups = input.nextInt();
-        int waterAmount = cups * 200;
-        int milkAmount = cups * 50;
-        int coffeeBeansAmount = cups * 15;
 
-        System.out.println("For "+cups +" cups of coffee you will need: ");
-        System.out.println(waterAmount+" ml of water");
-        System.out.println(milkAmount+" ml of milk");
-        System.out.println(coffeeBeansAmount+" g coffee beans");
+        // Request user input for available resources
+        System.out.println("Write how many ml of water the coffee machine has:");
+        int water = input.nextInt();
+        System.out.println("Write how many ml of milk the coffee machine has:");
+        int milk = input.nextInt();
+        System.out.println("Write how many grams of coffee beans the coffee machine has:");
+        int grams = input.nextInt();
+        System.out.println("Write how many cups of coffee you will need:");
+        int cups = input.nextInt();
+
+        // Calculate how many cups can be made with the available resources
+        int maxCupsByWater = water / 200;
+        int maxCupsByMilk = milk / 50;
+        int maxCupsByBeans = grams / 15;
+
+        // Find the minimum number of cups that can be made by the limiting resource
+        int maxPossibleCups = Math.min(maxCupsByWater, Math.min(maxCupsByMilk, maxCupsByBeans));
+
+        // Determine the output based on the number of cups requested and the available resources
+        if (cups <= maxPossibleCups) {
+            if (cups == maxPossibleCups) {
+                System.out.println("Yes, I can make that amount of coffee");
+            } else {
+                int additionalCups = maxPossibleCups - cups;
+                System.out.println("Yes, I can make that amount of coffee (and even " + additionalCups + " more than that)");
+            }
+        } else {
+            System.out.println("No, I can make only " + maxPossibleCups + " cup(s) of coffee");
+        }
+
+        input.close();
+
+
+
     }
 }
