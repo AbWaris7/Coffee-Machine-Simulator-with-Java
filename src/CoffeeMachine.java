@@ -1,134 +1,133 @@
-
-
 import java.util.Scanner;
 
 public class CoffeeMachine {
-
-    int milk;
-    int coffeeBeans;
-    int cups;
-    int money;
-    int water;
-
-
-    public CoffeeMachine(int water, int milk, int coffeeBeans, int cups, int money) {
-        this.water = water;
-        this.milk = milk;
-        this.coffeeBeans = coffeeBeans;
-        this.cups = cups;
-        this.money = money;
-    }
-
-
-    private void fill(Scanner scanner) {
-        System.out.println("Write how many ml of water do you want to add:");
-        this.water += scanner.nextInt();
-        System.out.println("Write how many ml of milk do you want to add:");
-        this.milk += scanner.nextInt();
-        System.out.println("Write how many grams of coffee beans do you want to add:");
-        this.coffeeBeans += scanner.nextInt();
-        System.out.println("Write how many disposable cups of coffee do you want to add:");
-        this.cups += scanner.nextInt();
-    }
-
-
-    private enum Coffee {
-
-        ESPRESSO(250, 0, 16, 4),
-        LATTE(350, 75, 20, 7),
-        CAPPUCCINO(200, 100, 12, 6);
-
-        int waterNeeded;
-        int milkNeeded;
-        int coffeeBeansNeeded;
-        int price;
-
-        Coffee(int waterNeeded, int milkNeeded, int coffeeBeansNeeded, int price) {
-            this.waterNeeded = waterNeeded;
-            this.milkNeeded = milkNeeded;
-            this.coffeeBeansNeeded = coffeeBeansNeeded;
-            this.price = price;
-        }
-    }
-
-
-    private void allActions() {
-        stateCoffeeMachine();
-        actionCoffeeMachine();
-        stateCoffeeMachine();
-    }
-
-
-    public void stateCoffeeMachine() {
-        System.out.println("The coffee machine has:");
-        System.out.println(this.water + " of water");
-        System.out.println(this.milk + " of milk");
-        System.out.println(this.coffeeBeans + " of coffee beans");
-        System.out.println(this.cups + " of disposable cups");
-        System.out.println(this.money + " of money\n");
-    }
-
-
-    private void stateChanger(Coffee coffee) {
-        this.water -= coffee.waterNeeded;
-        this.milk -= coffee.milkNeeded;
-        this.coffeeBeans -= coffee.coffeeBeansNeeded;
-        this.cups -= 1;
-        this.money += coffee.price;
-    }
-
-
-    private void buy(Scanner scanner) {
-        System.out.println("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino: ");
-        int coffeeNumber = scanner.nextInt();
-        Coffee selectedCoffee;
-        switch (coffeeNumber) {
-            case 1:
-                selectedCoffee = Coffee.ESPRESSO;
-                break;
-            case 2:
-                selectedCoffee = Coffee.LATTE;
-                break;
-            case 3:
-            default:
-                selectedCoffee = Coffee.CAPPUCCINO;
-                break;
-        }
-
-        stateChanger(selectedCoffee);
-    }
-
-
-    private void take() {
-        System.out.println("I gave you $" + this.money);
-        this.money = 0;
-    }
-
-
-    public void actionCoffeeMachine() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Write action (buy, fill, take): ");
-        String action = scanner.next();
-        switch (action) {
-            case "buy":
-                buy(scanner);
-                break;
-            case "fill":
-                fill(scanner);
-                break;
-            case "take":
-                take();
-                break;
-            default:
-                break;
-        }
-    }
-
+    private int water = 400;
+    private int milk = 540;
+    private int coffeeBeans = 120;
+    private int cups = 9;
+    private int money = 550;
+    private int cupsMade = 0;
 
     public static void main(String[] args) {
-        CoffeeMachine coffeeMachine = new CoffeeMachine(400, 540, 120, 9, 550);
-        coffeeMachine.stateCoffeeMachine();
-        coffeeMachine.actionCoffeeMachine();
-        coffeeMachine.stateCoffeeMachine();
+        CoffeeMachine machine = new CoffeeMachine();
+        machine.run();
+    }
+
+    public void run() {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println("\nWrite action (buy, fill, take, clean, remaining, exit):");
+            String action = scanner.nextLine().trim();
+
+            switch (action) {
+                case "buy":
+                    buy(scanner);
+                    break;
+                case "fill":
+                    fill(scanner);
+                    break;
+                case "take":
+                    take();
+                    break;
+                case "clean":
+                    clean();
+                    break;
+                case "remaining":
+                    displayState();
+                    break;
+                case "exit":
+                    return; // Exit the loop and terminate the program
+                default:
+                    System.out.println("Invalid action. Try again.");
+            }
+        }
+    }
+
+    private void clean() {
+        if (cupsMade >= 10) {
+            System.out.println("I have been cleaned!");
+            cupsMade = 0;  // Reset the counter after cleaning
+        } else {
+            System.out.println("The machine does not need cleaning yet.");
+        }
+    }
+
+    private void buy(Scanner scanner) {
+        if (cupsMade >= 10) {
+            System.out.println("I need cleaning!");
+            return;
+        }
+
+        System.out.println("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino, back - to main menu:");
+        String choice = scanner.nextLine().trim();
+
+        if (choice.equals("back")) {
+            return; // Go back to the main menu
+        }
+
+        switch (choice) {
+            case "1":
+                makeCoffee(250, 0, 16, 4);
+                break;
+            case "2":
+                makeCoffee(350, 75, 20, 7);
+                break;
+            case "3":
+                makeCoffee(200, 100, 12, 6);
+                break;
+            default:
+                System.out.println("Invalid choice.");
+        }
+    }
+
+    private void makeCoffee(int waterNeeded, int milkNeeded, int beansNeeded, int price) {
+        if (water < waterNeeded) {
+            System.out.println("Sorry, not enough water!");
+        } else if (milk < milkNeeded) {
+            System.out.println("Sorry, not enough milk!");
+        } else if (coffeeBeans < beansNeeded) {
+            System.out.println("Sorry, not enough coffee beans!");
+        } else if (cups < 1) {
+            System.out.println("Sorry, not enough cups!");
+        } else {
+            water -= waterNeeded;
+            milk -= milkNeeded;
+            coffeeBeans -= beansNeeded;
+            cups--;
+            money += price;
+            cupsMade++;
+            System.out.println("I have enough resources, making you a coffee!");
+        }
+    }
+
+    private void fill(Scanner scanner) {
+        System.out.println("Write how many ml of water you want to add:");
+        int addedWater = scanner.nextInt();
+        System.out.println("Write how many ml of milk you want to add:");
+        int addedMilk = scanner.nextInt();
+        System.out.println("Write how many grams of coffee beans you want to add:");
+        int addedCoffeeBeans = scanner.nextInt();
+        System.out.println("Write how many disposable cups you want to add:");
+        int addedCups = scanner.nextInt();
+        scanner.nextLine(); // Consume the leftover newline character
+
+        water += addedWater;
+        milk += addedMilk;
+        coffeeBeans += addedCoffeeBeans;
+        cups += addedCups;
+    }
+
+    private void take() {
+        System.out.println("I gave you $" + money);
+        money = 0;
+    }
+
+    private void displayState() {
+        System.out.println("\nThe coffee machine has:");
+        System.out.println(water + " ml of water");
+        System.out.println(milk + " ml of milk");
+        System.out.println(coffeeBeans + " g of coffee beans");
+        System.out.println(cups + " disposable cups");
+        System.out.println("$" + money + " of money");
     }
 }
